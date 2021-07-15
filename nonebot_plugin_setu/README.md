@@ -1,0 +1,2 @@
+# nonebot_plugin_setu
+基于nonebot2、loliconImage的涩图插件
