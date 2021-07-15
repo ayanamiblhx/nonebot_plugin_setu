@@ -41,8 +41,8 @@ async def _(bot: Bot, event: Event):
             minute = int((remain / 60) % 60)
             await setu.send(f'要等{hour}小时{minute}分钟才能再要涩图哦', at_sender=True)
     except Exception as e:
-        logger.error('栞栞被风控了' + str(e))
-        await setu.send(message=Message('栞栞被风控了,本次涩图不计入cd'), at_sender=True)
+        logger.error('机器人被风控了' + str(e))
+        await setu.send(message=Message('机器人被风控了,本次涩图不计入cd'), at_sender=True)
         deleteJson(event.get_user_id(),readJson())
 
 @downLoad.handle()
@@ -55,6 +55,6 @@ async def _(bot: Bot, event: Event):
             logger.error('下载时出现异常' + str(e))
             await downLoad.send(str(e),at_sender=True)
     else:
-        await downLoad.send('只有栞那才有权限哦', at_sender=True)
+        await downLoad.send('只有主人才有权限哦', at_sender=True)
 
 
