@@ -21,6 +21,8 @@ if platform.system() == 'Windows':
 
 if not os.path.exists('loliconImages'):
     os.mkdir('loliconImages')
+if not os.path.exists('data'):
+    os.mkdir('data')
 if not os.path.exists('data/userscd.json'):
     with open('data/userscd.json','w') as file:
         file.write('{}')
