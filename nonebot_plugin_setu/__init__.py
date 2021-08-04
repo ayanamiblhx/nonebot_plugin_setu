@@ -32,18 +32,18 @@ if not os.path.exists('data/userscd.json'):
 async def _(bot: Bot, event: Event):
     imgPath = Path("loliconImages").resolve()
     jpg = str(random.randint(0, len(glob.glob('loliconImages/*.jpg')) - 1)) + '.jpg'
-    try:
-        no_timeout,remain = check(event.get_user_id())
-        if no_timeout or event.get_user_id() in super_user:
+    no_timeout,remain = check(event.get_user_id())
+    if no_timeout or event.get_user_id() in super_user:
+        try:
             await setu.send(('今日涩图' + MessageSegment.image(f"file:///{imgPath.joinpath(jpg)}")),at_sender=True)
-        else:
-            hour = int(remain / 3600)
-            minute = int((remain / 60) % 60)
-            await setu.send(f'要等{hour}小时{minute}分钟才能再要涩图哦', at_sender=True)
-    except Exception as e:
-        logger.error('机器人被风控了' + str(e))
-        await setu.send(message=Message('机器人被风控了,本次涩图不计入cd'), at_sender=True)
-        deleteJson(event.get_user_id(),readJson())
+        except Exception as e:
+            logger.error('栞栞被风控了' + str(e))
+            await setu.send(message=Message('栞栞被风控了,本次涩图不计入cd'), at_sender=True)
+            deleteJson(event.get_user_id(), readJson())
+    else:
+        hour = int(remain / 3600)
+        minute = int((remain / 60) % 60)
+        await setu.send(f'要等{hour}小时{minute}分钟才能再要涩图哦', at_sender=True)
 
 @downLoad.handle()
 async def _(bot: Bot, event: Event):
