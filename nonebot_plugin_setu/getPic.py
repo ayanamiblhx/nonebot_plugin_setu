@@ -1,8 +1,7 @@
 import nonebot
 from httpx import AsyncClient
-import aiohttp
-import json
 import aiofiles
+import json
 import glob
 from nonebot.log import logger
 
@@ -17,32 +16,30 @@ async def getUrl(num:str):
         "r18": 0,
         "size1200": 'true',
     }
-    async with aiohttp.ClientSession(headers=head) as session:
-        async with session.get(url=req_url,params=params) as response:
-            res = await response.read()
-            try:
-                res = json.loads(res.decode('utf-8'))
-                datas = res['data']
-                await downPic(datas)
-            except Exception as e:
-                logger.error(e)
-                logger.error(res.txt)
+    async with AsyncClient(proxies={"all://":None}) as client:
+        res = await client.get(req_url,params=params,headers=head,timeout=10.0)
+        try:
+            res = json.loads(res.text)
+            datas = res['data']
+            await downPic(datas)
+        except Exception as e:
+            logger.error(e)
+            logger.error(res.txt)
 
 
 async def downPic(datas):
-    async with AsyncClient() as client:
-        head = {
-            'referer': 'https://www.pixiv.net/',
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36"
-        }
-        async with aiohttp.ClientSession(headers=head) as session:
-            for data in datas:
-                url = data['url'].replace('i.pixiv.cat','i.pximg.net')
-                async with session.get(url=url,proxy=local_proxy,timeout=10) as response:
-                    index = len(glob.glob('./loliconImages/*.jpg'))
-                    img_path = 'loliconImages/' + str(index) + '.jpg'
-                    async with aiofiles.open(img_path, 'wb') as f:
-                        try:
-                            await f.write(await response.read())
-                        except TimeoutError:
-                            pass
+    head = {
+        'referer': 'https://www.pixiv.net/',
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36"
+    }
+    async with AsyncClient(proxies={"all://":local_proxy}) as client:
+        for data in datas:
+            url = data['url'].replace('i.pixiv.cat','i.pximg.net')
+            response = await client.get(url=url,headers=head,timeout=10.0)
+            index = len(glob.glob('./loliconImages/*.jpg'))
+            img_path = 'loliconImages/' + str(index) + '.jpg'
+            async with aiofiles.open(img_path, 'wb') as f:
+                try:
+                    await f.write(response.content)
+                except TimeoutError:
+                    pass

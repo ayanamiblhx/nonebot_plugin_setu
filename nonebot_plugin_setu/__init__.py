@@ -1,5 +1,4 @@
 import os
-import platform
 import nonebot
 from nonebot import on_command
 from nonebot.adapters.cqhttp import Bot, Message, Event
@@ -14,10 +13,6 @@ from pathlib import Path
 setu = on_command('setu', aliases={'无内鬼', '涩图', '色图'})
 downLoad = on_command('下载涩图')
 super_user = nonebot.get_driver().config.superusers
-
-if platform.system() == 'Windows':
-    import asyncio
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 if not os.path.exists('loliconImages'):
     os.mkdir('loliconImages')
@@ -37,8 +32,8 @@ async def _(bot: Bot, event: Event):
         try:
             await setu.send(('今日涩图' + MessageSegment.image(f"file:///{imgPath.joinpath(jpg)}")),at_sender=True)
         except Exception as e:
-            logger.error('栞栞被风控了' + str(e))
-            await setu.send(message=Message('栞栞被风控了,本次涩图不计入cd'), at_sender=True)
+            logger.error('机器人被风控了' + str(e))
+            await setu.send(message=Message('机器人被风控了,本次涩图不计入cd'), at_sender=True)
             deleteJson(event.get_user_id(), readJson())
     else:
         hour = int(remain / 3600)
