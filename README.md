@@ -13,7 +13,7 @@ SUPERUSERS=["主人的qq号"]
 #注意: 确保能够访问相关服务后才能下载涩图
 LOCAL_PROXY = '魔法地址(例如http://127.0.0.1:7890)，这与你使用的魔法有关' 
 #涩图CD
-SETU_CD = xxx秒
+SETU_CD = xxx（单位：秒）
 
 在bot.py中添加
 nonebot.load_plugin("nonebot_plugin_setu")
