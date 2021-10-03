@@ -10,17 +10,20 @@ def readJson():
         f_in.close()
         return data
 
+
 def writeJson(qid: str, time: int,data: dict):
     data[qid] = time
     with open(r'data/userscd.json', 'w') as f_out:
         json.dump(data, f_out)
         f_out.close()
 
+
 def deleteJson(qid:str,data:dict):
     del data[qid]
     with open(r'data/userscd.json', 'w') as f_out:
         json.dump(data, f_out)
         f_out.close()
+
 
 def check(user_id) -> 'bool,int':
     data = readJson()

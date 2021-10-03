@@ -45,7 +45,7 @@ async def _(bot: Bot, event: Event):
     if event.get_user_id() in super_user:
         try:
             await getUrl('80')
-            await downLoad.send('下载涩图成功',at_sender=True)
+            await downLoad.send(f"下载涩图成功,图库中涩图数量{len(glob.glob('loliconImages/*.jpg'))}",at_sender=True)
         except Exception as e:
             logger.error('下载时出现异常' + str(e))
             await downLoad.send(str(e),at_sender=True)
