@@ -2,8 +2,8 @@ from httpx import AsyncClient
 import aiofiles
 import json
 import glob
-from nonebot.log import logger
 from .proxies import proxy_http, proxy_socks
+
 
 async def getUrl(num: str):
     head = {
@@ -21,8 +21,7 @@ async def getUrl(num: str):
             datas = res['data']
             await downPic(datas)
         except Exception as e:
-            logger.error(e)
-            logger.error(res.txt)
+            raise e
 
 
 async def downPic(datas):
@@ -30,7 +29,7 @@ async def downPic(datas):
         'referer': 'https://www.pixiv.net/',
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36"
     }
-    async with AsyncClient(proxies=proxy_http,transport=proxy_socks) as client:
+    async with AsyncClient(proxies=proxy_http, transport=proxy_socks) as client:
         for data in datas:
             url = data['url'].replace('i.pixiv.cat', 'i.pximg.net')
             response = await client.get(url=url, headers=head, timeout=10.0)
@@ -41,3 +40,5 @@ async def downPic(datas):
                     await f.write(response.content)
                 except TimeoutError:
                     pass
+                except Exception as e:
+                    raise e
