@@ -31,3 +31,11 @@ nonebot.load_plugin("nonebot_plugin_setu")
 #### 发送涩图
 
 向机器人发送命令**setu、涩图、色图、无内鬼**之一即可发送色图
+
+
+
+# 更新
+
+### 2021/1/26 [v1.0.0a1]
+
+- 支持nonebot[v2.0.0-beta1]，beta1之前的请使用0.0.6版本
