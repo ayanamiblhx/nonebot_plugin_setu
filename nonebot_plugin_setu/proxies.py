@@ -1,16 +1,16 @@
 from httpx_socks import AsyncProxyTransport
-import nonebot
+from .create_file import Config
 from nonebot.log import logger
 
-global_config = nonebot.get_driver().config
+proxy_config = Config()
 
-socks = global_config.proxies_socks
-http = global_config.proxies_http
-if socks is not None:
+socks = proxy_config.proxies_socks
+http = proxy_config.proxies_http
+if socks != '':
     logger.info('已配置socks代理')
     proxy_socks = AsyncProxyTransport.from_url(socks)
     proxy_http = None
-elif http is not None:
+elif http != '':
     logger.info('已配置http代理')
     proxy_socks = None
     proxy_http = http

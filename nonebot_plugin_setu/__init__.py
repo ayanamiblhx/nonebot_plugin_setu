@@ -1,44 +1,34 @@
 import os
-import nonebot
 from nonebot.plugin import on_command
 from nonebot.adapters.onebot.v11 import Bot, Message, Event, MessageSegment
 import random
 import glob
-from .getPic import getUrl
-from .limit import readJson, writeJson, check, deleteJson
+from .create_file import Config
+from .getPic import get_url
+from .limit import read_json, write_json, check, delete_json
 from nonebot.log import logger
 from pathlib import Path
 
-setu = on_command('setu', aliases={'无内鬼', '涩图', '色图'})
+setu = on_command('nonebot_plugin_setu', aliases={'无内鬼', '涩图', '色图'})
 downLoad = on_command("下载涩图")
-super_user = nonebot.get_driver().config.superusers
-
-if not os.path.exists('loliconImages'):
-    os.mkdir('loliconImages')
-if not os.path.exists('data'):
-    os.mkdir('data')
-if not os.path.exists('data/userscd.json'):
-    with open('data/userscd.json', 'w') as file:
-        file.write('{}')
-        file.close()
+Config.create()
+super_user = Config().super_users
 
 
 @setu.handle()
 async def _(bot: Bot, event: Event):
-    imgPath = Path("loliconImages").resolve()
-
-    # jpg = str(random.randint(0, len(glob.glob('loliconImages/*.jpg')) - 1)) + '.jpg'
-    images = os.listdir(imgPath)
+    img_path = Path("loliconImages").resolve()
+    images = os.listdir(img_path)
+    file_name = images[random.randint(0, len(glob.glob('loliconImages/*.jpg'))) - 1]
     no_timeout, remain = check(event.get_user_id())
     if no_timeout or event.get_user_id() in super_user:
         try:
-            await setu.send(('今日涩图' + MessageSegment.image(
-                f"file:///{imgPath.joinpath(images[random.randint(0, len(glob.glob('loliconImages/*.jpg')) - 1)])}")),
-                            at_sender=True)
+            await setu.send((MessageSegment.image(f"file:///{img_path.joinpath(file_name)}") +
+                             f"PID: {file_name.replace('.jpg','')}"), at_sender=True)
         except Exception as e:
             logger.error('机器人被风控了' + str(e))
             await setu.send(message=Message('机器人被风控了,本次涩图不计入cd'), at_sender=True)
-            deleteJson(event.get_user_id(), readJson())
+            delete_json(event.get_user_id(), read_json(r'data/userscd.json'))
     else:
         hour = int(remain / 3600)
         minute = int((remain / 60) % 60)
@@ -47,13 +37,13 @@ async def _(bot: Bot, event: Event):
 
 @downLoad.handle()
 async def _(bot: Bot, event: Event):
-    print(1)
     if event.get_user_id() in super_user:
         try:
-            await getUrl('20')
+            await downLoad.send(f"开始下载...")
+            await get_url(Config().setu_num)
             await downLoad.send(f"下载涩图成功,图库中涩图数量{len(glob.glob('loliconImages/*.jpg'))}", at_sender=True)
         except Exception as e:
-            logger.error('下载时出现异常' + str(e))
+            logger.error(f'下载时出现异常{e}')
             await downLoad.send(str(e), at_sender=True)
     else:
         await downLoad.send('只有主人才有权限哦', at_sender=True)
