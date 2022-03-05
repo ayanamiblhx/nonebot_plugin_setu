@@ -1,4 +1,4 @@
-![NoneBot](https://v2.nonebot.dev/logo.png)
+<img src="https://v2.nonebot.dev/logo.png" alt="NoneBot" style="zoom:50%;" />
 
 # nonebot_plugin_setu
 
