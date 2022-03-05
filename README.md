@@ -24,12 +24,20 @@
 ### 添加配置
 
 - **在你的setu_config.json文件中修改如下配置：**
+
   SUPERUSERS = ["主人的qq号"]，可添加多个
-  **注意:** 确保能够访问相关服务后才能下载涩图(二者填其一，海外服务器可不填)
+
+  注意: 确保能够访问相关服务后才能下载涩图(二者填其一，海外服务器可不填)
+
   PROXIES_HTTP = 'HTTP魔法地址(例如'http://127.0.0.1:7890')，这与你使用的魔法有关'
+
   PROXIES_SOCKS = 'SOCKS5魔法地址(例如'socks5://127.0.0.1:10808')，这与你使用的魔法有关'
+
   SETU_CD = xxx（单位：秒）
+
   SETU_NUM = xxx （每次下载的图片张数，不大于100）
+
+  
 
 - **在bot.py中添加：**
   nonebot.load_plugin("nonebot_plugin_setu")
