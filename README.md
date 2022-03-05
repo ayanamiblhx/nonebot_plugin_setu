@@ -1,4 +1,4 @@
-<img src="images/logo.png" alt="logo" style="zoom:33%;" />
+[![bw2k9A.png](https://s4.ax1x.com/2022/03/05/bw2k9A.png)](https://imgtu.com/i/bw2k9A)
 
 # nonebot_plugin_setu
 
