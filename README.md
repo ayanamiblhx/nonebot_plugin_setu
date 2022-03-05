@@ -1,4 +1,6 @@
-[![bw2k9A.png](https://s4.ax1x.com/2022/03/05/bw2k9A.png)](https://imgtu.com/i/bw2k9A)
+<div align=center>
+	<img src="https://s4.ax1x.com/2022/03/05/bw2k9A.png" alt="bw2k9A.png" border="0"/>
+</div>
 
 # nonebot_plugin_setu
 
