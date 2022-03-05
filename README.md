@@ -10,8 +10,8 @@
 
 ## 安装及更新
 
-- 使用nb plugin install nonebot_plugin_setu或者pip install nonebot_plugin_setu来进行安装
-- 使用nb plugin update nonebot_plugin_setu或者pip install nonebot_plugin_setu -U来进行更新
+- 使用`nb plugin install nonebot_plugin_setu`或者`pip install nonebot_plugin_setu`来进行安装
+- 使用`nb plugin update nonebot_plugin_setu`或者`pip install nonebot_plugin_setu -U`来进行更新
 
 
 
@@ -29,9 +29,9 @@
 
   注意: 确保能够访问相关服务后才能下载涩图(二者填其一，海外服务器可不填)
 
-  PROXIES_HTTP = 'HTTP魔法地址(例如'http://127.0.0.1:7890')，这与你使用的魔法有关'
+  PROXIES_HTTP = 'HTTP魔法地址(例如`http://127.0.0.1:7890`)，这与你使用的魔法有关'
 
-  PROXIES_SOCKS = 'SOCKS5魔法地址(例如'socks5://127.0.0.1:10808')，这与你使用的魔法有关'
+  PROXIES_SOCKS = 'SOCKS5魔法地址(例如`socks5://127.0.0.1:10808`)，这与你使用的魔法有关'
 
   SETU_CD = xxx（单位：秒）
 
@@ -40,7 +40,7 @@
   
 
 - **在bot.py中添加：**
-  nonebot.load_plugin("nonebot_plugin_setu")
+  `nonebot.load_plugin("nonebot_plugin_setu")`
 
 
 
