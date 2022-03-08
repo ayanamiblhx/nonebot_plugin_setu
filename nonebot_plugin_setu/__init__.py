@@ -9,7 +9,7 @@ from .limit import read_json, write_json, check, delete_json
 from nonebot.log import logger
 from pathlib import Path
 
-setu = on_command('nonebot_plugin_setu', aliases={'无内鬼', '涩图', '色图'})
+setu = on_command('setu', aliases={'无内鬼', '涩图', '色图'})
 downLoad = on_command("下载涩图")
 Config.create()
 super_user = Config().super_users
