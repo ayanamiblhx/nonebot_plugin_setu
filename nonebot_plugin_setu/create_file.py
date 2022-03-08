@@ -6,7 +6,6 @@ setu_config = {
     'PROXIES_HTTP': '',
     'PROXIES_SOCKS': '',
     'SETU_CD': 0,
-    'SETU_NUM': '80'
 }
 
 
@@ -21,7 +20,6 @@ class Config:
         self.proxies_http = self.config['PROXIES_HTTP']
         self.proxies_socks = self.config['PROXIES_SOCKS']
         self.setu_cd = self.config['SETU_CD']
-        self.setu_num = self.config['SETU_NUM']
 
     @staticmethod
     def create():

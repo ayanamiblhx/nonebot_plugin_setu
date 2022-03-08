@@ -1,3 +1,4 @@
 httpx~=0.21.3
 httpx_socks~=0.7.3
-nonebot~=1.8.2
+nonebot==1.8.2
+tqdm~=4.61.0
