@@ -7,7 +7,8 @@ from tqdm import tqdm
 
 async def get_url(num: int):
     head = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "Chrome/90.0.4430.93 Safari/537.36",
     }
     params = {
         "r18": 0,
@@ -34,21 +35,22 @@ async def get_url(num: int):
 async def down_pic(datas):
     head = {
         'referer': 'https://www.pixiv.net/',
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "Chrome/90.0.4430.93 Safari/537.36 "
     }
     async with AsyncClient(proxies=proxy_http, transport=proxy_socks) as client:
         pbar = tqdm(datas, desc='Downloading', colour='green')
         for data in datas:
             url = data['urls']['regular'].replace('i.pixiv.cat', 'i.pximg.net')
             pid = data['pid']
-            response = await client.get(url=url, headers=head, timeout=10.0)
-            pbar.update(1)
-            img_path = f'loliconImages/{pid}.jpg'
-            with open(img_path, 'wb') as f:
-                try:
+            try:
+                response = await client.get(url=url, headers=head, timeout=10.0)
+                pbar.update(1)
+                img_path = f'loliconImages/{pid}.jpg'
+                with open(img_path, 'wb') as f:
                     f.write(response.content)
-                except TimeoutError:
-                    pass
-                except Exception as e:
-                    raise e
+            except TimeoutError:
+                pass
+            except Exception as e:
+                raise e
         pbar.close()
