@@ -27,7 +27,7 @@ async def _(bot: Bot, event: Event):
     if no_timeout or event.get_user_id() in super_user:
         try:
             await setu.send((MessageSegment.image(f"file:///{img_path.joinpath(file_name)}") +
-                             f"PID: {file_name.replace('.jpg', '')}"), at_sender=True)
+                             f"https://www.pixiv.net/artworks/{file_name.replace('.jpg', '')}"), at_sender=True)
         except Exception as e:
             logger.error('机器人被风控了' + str(e))
             await setu.send(message=Message('机器人被风控了,本次涩图不计入cd'), at_sender=True)
