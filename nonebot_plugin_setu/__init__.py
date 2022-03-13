@@ -9,7 +9,6 @@ from nonebot.log import logger
 from nonebot.plugin import on_command, on_regex
 
 from .create_file import Config
-from .dao.image_dao import ImageDao
 from .dao.usercd_dao import UserCdDao
 from .dao.groupcd_dao import GroupCdDao
 from .getPic import get_url
@@ -29,15 +28,13 @@ async def _(bot: Bot, event: Event):
     img_path = Path("loliconImages").resolve()
     images = os.listdir(img_path)
     file_name = images[random.randint(0, len(os.listdir('loliconImages'))) - 1]
-    file_name = re.sub(r'\D+', '', file_name)
-    img_info = ImageDao().get_images(file_name)
-    ext = img_info['ext']
+    pid = re.sub(r'\D+', '', file_name)
     remain_time = 0 if event.get_user_id() in Config().super_users else UserCdDao().get_user_remain_time(
         event.get_user_id(), event.group_id)
     if remain_time == 0:
         try:
-            await setu.send((MessageSegment.image(f"file:///{img_path.joinpath(file_name)}.{ext}") +
-                             f"https://www.pixiv.net/artworks/{file_name}"), at_sender=True)
+            await setu.send((MessageSegment.image(f"file:///{img_path.joinpath(file_name)}") +
+                             f"https://www.pixiv.net/artworks/{pid}"), at_sender=True)
         except Exception as e:
             logger.error(f'机器人被风控了{e}')
             await setu.send(message=Message('机器人被风控了,本次涩图不计入cd'), at_sender=True)
