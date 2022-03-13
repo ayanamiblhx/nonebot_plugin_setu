@@ -20,7 +20,7 @@ class GroupCdDao:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         cursor.execute(
-            'INSERT INTO group_cd (group_id, cd) VALUES (?, ?)',
+            'INSERT OR IGNORE INTO group_cd (group_id, cd) VALUES (?, ?)',
             (group_id, cd)
         )
         conn.commit()
