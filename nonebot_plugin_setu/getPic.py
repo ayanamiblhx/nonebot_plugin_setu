@@ -27,7 +27,7 @@ async def get_url(num: int):
                 res = json.loads(res.text)
                 data = res['data']
                 datas.extend(data)
-            await ImageDao().add_images(datas)
+            ImageDao().add_images(datas)
             await down_pic(datas)
         except Exception as e:
             logger.error(e)

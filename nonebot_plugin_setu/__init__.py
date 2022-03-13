@@ -30,7 +30,7 @@ async def _(bot: Bot, event: Event):
     images = os.listdir(img_path)
     file_name = images[random.randint(0, len(os.listdir('loliconImages'))) - 1]
     file_name = re.sub(r'\D+', '', file_name)
-    img_info = await ImageDao().get_images(file_name)
+    img_info = ImageDao().get_images(file_name)
     ext = img_info['ext']
     remain_time = 0 if event.get_user_id() in Config().super_users else UserCdDao().get_user_remain_time(
         event.get_user_id(), event.group_id)

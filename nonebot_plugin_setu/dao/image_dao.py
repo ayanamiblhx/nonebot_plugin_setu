@@ -6,7 +6,7 @@ class ImageDao:
     def __init__(self):
         self.db_path = 'data/lolicon.db'
 
-    async def add_images(self, datas):
+    def add_images(self, datas):
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         for data in datas:
@@ -20,16 +20,16 @@ class ImageDao:
             ext = data['ext']
             urls = json.dumps(data['urls'])
             upload_date = data['uploadDate']
-            sql = f"insert or ignore into lolicon_images(pid,uid,title,author,r18,width,height,ext,urls,upload_date) values('{pid}','{uid}','{title}','{author}','{r18}','{width}','{height}','{ext}','{urls}','{upload_date}')"
-            cursor.execute(sql)
+            sql = "INSERT INTO lolicon_images(pid, uid, title, author, r18, width, height, ext, urls, upload_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            cursor.execute(sql, (pid, uid, title, author, r18, width, height, ext, urls, upload_date))
             tags = data['tags']
             for tag in tags:
-                sql = f"insert or ignore into lolicon_tags(pid,tags) values('{pid}','{tag}')"
-                cursor.execute(sql)
+                sql = "INSERT INTO lolicon_tags(pid, tags) VALUES (?, ?)"
+                cursor.execute(sql, (pid, tag))
         conn.commit()
         conn.close()
 
-    async def get_images(self, pid):
+    def get_images(self, pid):
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         sql = f"select * from lolicon_images where pid='{pid}'"

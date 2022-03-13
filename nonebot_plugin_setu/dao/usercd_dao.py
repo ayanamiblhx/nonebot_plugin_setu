@@ -32,7 +32,7 @@ class UserCdDao:
     def add_user_cd(self, user_id, last_time, cd):
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        cursor.execute(f"INSERT INTO user_cd VALUES ('{user_id}', '{last_time}', '{cd}')")
+        cursor.execute("INSERT INTO user_cd VALUES (?, ?, ?)", (user_id, last_time, cd))
         conn.commit()
         conn.close()
         pass
