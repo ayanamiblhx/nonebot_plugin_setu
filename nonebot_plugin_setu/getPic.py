@@ -1,6 +1,8 @@
 from httpx import AsyncClient
 import json
 from nonebot.log import logger
+
+from .dao.image_dao import ImageDao
 from .proxies import proxy_http, proxy_socks
 from tqdm import tqdm
 
@@ -25,6 +27,7 @@ async def get_url(num: int):
                 res = json.loads(res.text)
                 data = res['data']
                 datas.extend(data)
+            await ImageDao().add_images(datas)
             await down_pic(datas)
         except Exception as e:
             logger.error(e)
@@ -41,10 +44,11 @@ async def down_pic(datas):
         for data in datas:
             url = data['urls']['regular'].replace('i.pixiv.cat', 'i.pximg.net')
             pid = data['pid']
+            ext = data['ext']
             try:
                 response = await client.get(url=url, headers=head, timeout=10.0)
                 pbar.update(1)
-                img_path = f'loliconImages/{pid}.jpg'
+                img_path = f'loliconImages/{pid}.{ext}'
                 with open(img_path, 'wb') as f:
                     f.write(response.content)
             except TimeoutError:
