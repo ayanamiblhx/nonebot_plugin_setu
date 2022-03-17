@@ -1,6 +1,7 @@
 from httpx_socks import AsyncProxyTransport
-from .create_file import Config
 from nonebot.log import logger
+
+from .create_file import Config
 
 proxy_config = Config()
 

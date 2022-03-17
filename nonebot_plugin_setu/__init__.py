@@ -1,3 +1,4 @@
+import json
 import os
 import random
 import re
@@ -9,14 +10,16 @@ from nonebot.log import logger
 from nonebot.plugin import on_command, on_regex
 
 from .create_file import Config
-from .dao.usercd_dao import UserCdDao
 from .dao.groupcd_dao import GroupCdDao
+from .dao.usercd_dao import UserCdDao
 from .getPic import get_url
 
 setu = on_command('setu', aliases={'无内鬼', '涩图', '色图'})
 downLoad = on_regex(r"^下载涩图[1-9]\d*$")
 user_cd = on_regex(r"^\[CQ:at,qq=[1-9][0-9]{4,10}\] cd\d+$")
 group_cd = on_regex(r"^群cd0$|^群cd[1-9]\d*$")
+online_switch = on_regex(r"^开启在线发图$|^关闭在线发图$")
+proxy_switch = on_regex(r"^开启魔法$|^关闭魔法$")
 
 Config.create_file()
 Config.create_table()
@@ -33,8 +36,13 @@ async def _(bot: Bot, event: Event):
         event.get_user_id(), event.group_id)
     if remain_time == 0:
         try:
-            await setu.send((MessageSegment.image(f"file:///{img_path.joinpath(file_name)}") +
-                             f"https://www.pixiv.net/artworks/{pid}"), at_sender=True)
+            if Config().online_switch == 1:
+                img = await get_url(num=1, online_switch=1)
+                await setu.send(MessageSegment.image(img['base64']) +
+                                f"https://www.pixiv.net/artworks/{img['pid']}", at_sender=True)
+            else:
+                await setu.send(MessageSegment.image(f"file:///{img_path.joinpath(file_name)}") +
+                                f"https://www.pixiv.net/artworks/{pid}", at_sender=True)
         except Exception as e:
             logger.error(f'机器人被风控了{e}')
             await setu.send(message=Message('机器人被风控了,本次涩图不计入cd'), at_sender=True)
@@ -51,7 +59,7 @@ async def _(bot: Bot, event: Event):
     if event.get_user_id() in super_user:
         try:
             await downLoad.send(f"开始下载...")
-            await get_url(num)
+            await get_url(num=num, online_switch=0)
             await downLoad.send(f"下载涩图成功,图库中涩图数量{len(os.listdir('loliconImages'))}", at_sender=True)
         except Exception as e:
             logger.error(f'下载时出现异常{e}')
@@ -87,6 +95,31 @@ async def _(bot: Bot, event: Event):
             GroupCdDao().set_group_cd(event.group_id, cd)
         else:
             GroupCdDao().update_group_cd(event.group_id, cd)
+
         await group_cd.send(f'设置群{event.group_id}的cd成功,cd时间为{cd}s', at_sender=True)
     else:
         await group_cd.send('只有主人才有权限哦', at_sender=True)
+
+
+@online_switch.handle()
+async def _(bot: Bot, event: Event):
+    msg = event.get_plaintext()
+    switch = 1 if msg == "开启在线发图" else 0
+    with open('data/setu_config.json', 'r') as file:
+        configs = json.load(file)
+        configs['ONLINE_SWITCH'] = switch
+        with open('data/setu_config.json', 'w') as f:
+            json.dump(configs, f)
+            await online_switch.send(f'{msg}成功')
+
+
+@proxy_switch.handle()
+async def _(bot: Bot, event: Event):
+    msg = event.get_plaintext()
+    switch = 1 if msg == "开启魔法" else 0
+    with open('data/setu_config.json', 'r') as file:
+        configs = json.load(file)
+        configs['PROXIES_SWITCH'] = switch
+        with open('data/setu_config.json', 'w') as f:
+            json.dump(configs, f)
+            await online_switch.send(f'{msg}成功')

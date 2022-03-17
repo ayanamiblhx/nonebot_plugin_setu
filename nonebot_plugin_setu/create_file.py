@@ -1,5 +1,5 @@
-import os
 import json
+import os
 import sqlite3
 
 setu_config = {
@@ -7,7 +7,7 @@ setu_config = {
     'PROXIES_HTTP': '',
     'PROXIES_SOCKS': '',
     'PROXIES_SWITCH': 1,
-    'DOWNLOAD_SWITCH': 1,
+    'ONLINE_SWITCH': 0,
 }
 
 
@@ -22,7 +22,7 @@ class Config:
         self.proxies_http = self.config['PROXIES_HTTP']
         self.proxies_socks = self.config['PROXIES_SOCKS']
         self.proxies_switch = self.config['PROXIES_SWITCH']
-        self.download_switch = self.config['DOWNLOAD_SWITCH']
+        self.online_switch = self.config['ONLINE_SWITCH']
 
     @staticmethod
     def create_file():
