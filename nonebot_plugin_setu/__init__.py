@@ -105,21 +105,27 @@ async def _(bot: Bot, event: Event):
 async def _(bot: Bot, event: Event):
     msg = event.get_plaintext()
     switch = 1 if msg == "开启在线发图" else 0
-    with open('data/setu_config.json', 'r') as file:
-        configs = json.load(file)
-        configs['ONLINE_SWITCH'] = switch
-        with open('data/setu_config.json', 'w') as f:
-            json.dump(configs, f)
-            await online_switch.send(f'{msg}成功')
+    if event.get_user_id() in super_user:
+        with open('data/setu_config.json', 'r') as file:
+            configs = json.load(file)
+            configs['ONLINE_SWITCH'] = switch
+            with open('data/setu_config.json', 'w') as f:
+                json.dump(configs, f)
+                await online_switch.send(f'{msg}成功')
+    else:
+        await online_switch.send('只有主人才有权限哦', at_sender=True)
 
 
 @proxy_switch.handle()
 async def _(bot: Bot, event: Event):
     msg = event.get_plaintext()
     switch = 1 if msg == "开启魔法" else 0
-    with open('data/setu_config.json', 'r') as file:
-        configs = json.load(file)
-        configs['PROXIES_SWITCH'] = switch
-        with open('data/setu_config.json', 'w') as f:
-            json.dump(configs, f)
-            await online_switch.send(f'{msg}成功')
+    if event.get_user_id() in super_user:
+        with open('data/setu_config.json', 'r') as file:
+            configs = json.load(file)
+            configs['PROXIES_SWITCH'] = switch
+            with open('data/setu_config.json', 'w') as f:
+                json.dump(configs, f)
+                await proxy_switch.send(f'{msg}成功')
+    else:
+        await proxy_switch.send('只有主人才有权限哦', at_sender=True)
