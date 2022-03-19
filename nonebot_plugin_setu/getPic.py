@@ -11,13 +11,14 @@ from .dao.image_dao import ImageDao
 from .proxies import proxy_http, proxy_socks
 
 
-async def get_url(num: int, online_switch: int):
+async def get_url(num: int, online_switch: int, tags: list):
     head = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.36",
     }
     params = {
         "r18": 0,
         "size": 'regular',
+        "tag": tags,
     }
     async with AsyncClient() as client:
         times = int(num / 100) + 1
@@ -30,6 +31,8 @@ async def get_url(num: int, online_switch: int):
                 res = await client.get(req_url, params=params, headers=head, timeout=10.0)
                 res = json.loads(res.text)
                 data = res['data']
+                if not data:
+                    return ""
                 datas.extend(data)
             ImageDao().add_images(datas)
             img = await down_pic(datas, online_switch)
@@ -48,12 +51,14 @@ async def down_pic(datas, online_switch: int):
     socks = proxy_socks if Config().proxies_switch else None
     async with AsyncClient(proxies=http, transport=socks) as client:
         pbar = tqdm(datas, desc='Downloading', colour='green')
+        tag_img = ""
         for data in datas:
             proxy_url = data['urls']['regular'].replace('i.pixiv.cat', 'i.pximg.net')
             url = data['urls']['regular'].replace('i.pixiv.cat', 'i.pixiv.re')
             url = proxy_url if Config().proxies_switch else url
             pid = data['pid']
             ext = data['ext']
+            tag_img = str(pid) + "." + ext
             try:
                 response = await client.get(url=url, headers=head, timeout=10.0)
                 pbar.update(1)
@@ -69,3 +74,4 @@ async def down_pic(datas, online_switch: int):
             except Exception as e:
                 raise e
         pbar.close()
+        return tag_img

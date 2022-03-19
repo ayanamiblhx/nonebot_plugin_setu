@@ -7,14 +7,15 @@ from pathlib import Path
 
 from nonebot.adapters.onebot.v11 import Bot, Message, Event, MessageSegment
 from nonebot.log import logger
-from nonebot.plugin import on_command, on_regex
+from nonebot.plugin import on_regex
 
 from .create_file import Config
 from .dao.groupcd_dao import GroupCdDao
+from .dao.image_dao import ImageDao
 from .dao.usercd_dao import UserCdDao
-from .getPic import get_url
+from .getPic import get_url, down_pic
 
-setu = on_command('setu', aliases={'无内鬼', '涩图', '色图'})
+setu = on_regex("^涩图$|^setu$|^无内鬼$|^色图$|^涩图tag.+$")
 downLoad = on_regex(r"^下载涩图[1-9]\d*$")
 user_cd = on_regex(r"^\[CQ:at,qq=[1-9][0-9]{4,10}\] cd\d+$")
 group_cd = on_regex(r"^群cd0$|^群cd[1-9]\d*$")
@@ -36,13 +37,33 @@ async def _(bot: Bot, event: Event):
         event.get_user_id(), event.group_id)
     if remain_time == 0:
         try:
+            msg = event.get_plaintext()
+            tag_flag = 0
+            if bool(re.search(r"^涩图tag.+$", msg)):
+                tag_flag = 1
+                tags = re.sub(r'^涩图tag', '', msg).split('和')
+                if len(tags) > 3:
+                    await setu.send('涩图tag最多只能有三个哦', at_sender=True)
+                    UserCdDao().delete_user_cd(event.get_user_id())
+                    return
+                else:
+                    file_name = await get_url(num=1, tags=tags, online_switch=Config().online_switch)
+                    if Config().online_switch == 0:
+                        pid = re.sub(r'\D+', '', file_name)
+                    if file_name == "":
+                        await setu.send('没有找到相关涩图，请更换tag', at_sender=True)
+                        UserCdDao().delete_user_cd(event.get_user_id())
+                        return
             if Config().online_switch == 1:
-                img = await get_url(num=1, online_switch=1)
+                if tag_flag == 0:
+                    img = await get_url(num=1, online_switch=1, tags="")
+                else:
+                    img = file_name
                 await setu.send(MessageSegment.image(img['base64']) +
                                 f"https://www.pixiv.net/artworks/{img['pid']}", at_sender=True)
-            else:
-                await setu.send(MessageSegment.image(f"file:///{img_path.joinpath(file_name)}") +
-                                f"https://www.pixiv.net/artworks/{pid}", at_sender=True)
+                return
+            await setu.send(MessageSegment.image(f"file:///{img_path.joinpath(file_name)}") +
+                            f"https://www.pixiv.net/artworks/{pid}", at_sender=True)
         except Exception as e:
             logger.error(f'机器人被风控了{e}')
             await setu.send(message=Message('机器人被风控了,本次涩图不计入cd'), at_sender=True)
@@ -59,7 +80,7 @@ async def _(bot: Bot, event: Event):
     if event.get_user_id() in super_user:
         try:
             await downLoad.send(f"开始下载...")
-            await get_url(num=num, online_switch=0)
+            await get_url(num=num, online_switch=0, tags="")
             await downLoad.send(f"下载涩图成功,图库中涩图数量{len(os.listdir('loliconImages'))}", at_sender=True)
         except Exception as e:
             logger.error(f'下载时出现异常{e}')

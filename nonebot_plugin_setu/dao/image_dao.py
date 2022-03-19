@@ -37,6 +37,31 @@ class ImageDao:
         img_info = cursor.fetchone()
         data = {}
         for idx, col in enumerate(cursor.description):
-            data[col[0]] = img_info[idx]
+            if col[0] == 'urls':
+                data[col[0]] = json.loads(img_info[idx])
+            else:
+                data[col[0]] = img_info[idx]
         conn.close()
         return data
+
+    def get_tags(self, tags):
+        tags = tags.split('&')
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        sql = f"select * from lolicon_tags where tags like '%{tags[0]}%'"
+        if len(tags) > 1:
+            for tag in tags[1:]:
+                sql += f" or tags like '%{tag}%'"
+        cursor.execute(sql)
+        img_list = []
+        for pid in cursor.fetchall():
+            img = self.get_images(pid[1])
+            img_list.append(img)
+        conn.close()
+        return img_list
+
+
+
+
+
+
