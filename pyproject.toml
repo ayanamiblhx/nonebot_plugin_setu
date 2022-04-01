@@ -1,11 +1,12 @@
 [tool.poetry]
 name = "nonebot_plugin_setu"
-version = "1.0.14"
+version = "1.0.15"
 description = "基于lolicon api的涩图插件"
 authors = ["ayanamiblhx <1196818079@qq.com>"]
 license = "Apache License 2.0"
 homepage = "https://github.com/ayanamiblhx/nonebot_plugin_setu"
 documentation = "https://github.com/ayanamiblhx/nonebot_plugin_setu/blob/main/README.md"
+readme="README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
