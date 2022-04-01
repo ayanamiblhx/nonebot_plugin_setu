@@ -9,10 +9,11 @@ documentation = "https://github.com/ayanamiblhx/nonebot_plugin_setu/blob/main/RE
 
 [tool.poetry.dependencies]
 python = "^3.9"
-httpx = "~=0.21.3"
-httpx-socks = "~=0.7.3"
-nonebot2 = ">=2.0.0b2"
-tqdm = "~=4.61.0"
+httpx = "^0.21.3"
+httpx-socks = "^0.7.3"
+nonebot2 = "^2.0.0b2"
+nonebot-adapter-onebot = "^2.0.0b1"
+tqdm = "^4.61.0"
 
 [tool.poetry.dev-dependencies]
 
