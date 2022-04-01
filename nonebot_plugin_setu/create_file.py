@@ -29,23 +29,7 @@ class Config:
         if not os.path.exists('data/lolicon.db'):
             conn = sqlite3.connect('data/lolicon.db')
             conn.close()
-        if not os.path.exists('loliconImages'):
-            os.mkdir('loliconImages')
+        if not os.path.exists('loliconImages/r18'):
+            os.mkdir('loliconImages/r18')
         if not os.path.exists('data'):
             os.mkdir('data')
-
-    @staticmethod
-    def create_table():
-        conn = sqlite3.connect('data/lolicon.db')
-        cursor = conn.cursor()
-        table_sql = 'create table if not exists lolicon_images(pid text primary key, uid text, title text,' \
-                    ' author text, r18 text ,width integer,height integer,ext text,urls text,upload_date text)'
-        tags_sql = 'create table if not exists lolicon_tags(id integer primary key AUTOINCREMENT, pid text, tags text,unique (pid,tags))'
-        user_cd_sql = 'create table if not exists user_cd(user_id text primary key, last_time integer ,cd integer)'
-        group_cd_sql = 'create table if not exists group_cd(group_id text primary key, cd integer)'
-        cursor.execute(table_sql)
-        cursor.execute(tags_sql)
-        cursor.execute(user_cd_sql)
-        cursor.execute(group_cd_sql)
-        conn.commit()
-        conn.close()

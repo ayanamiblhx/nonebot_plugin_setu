@@ -2,7 +2,7 @@ import base64
 import json
 from io import BytesIO
 
-from httpx import AsyncClient
+from httpx import AsyncClient, ConnectTimeout
 from nonebot.log import logger
 from tqdm import tqdm
 
@@ -11,12 +11,12 @@ from .dao.image_dao import ImageDao
 from .proxies import proxy_http, proxy_socks
 
 
-async def get_url(num: int, online_switch: int, tags: list):
+async def get_url(num: int, online_switch: int, tags: list, r18: int = 0):
     head = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.36",
     }
     params = {
-        "r18": 0,
+        "r18": r18,
         "size": 'regular',
         "tag": tags,
     }
@@ -35,14 +35,14 @@ async def get_url(num: int, online_switch: int, tags: list):
                     return ""
                 datas.extend(data)
             ImageDao().add_images(datas)
-            img = await down_pic(datas, online_switch)
+            img = await down_pic(datas, online_switch, r18)
             return img
         except Exception as e:
             logger.error(e)
             raise e
 
 
-async def down_pic(datas, online_switch: int):
+async def down_pic(datas, online_switch: int, r18: int = 0):
     head = {
         'referer': 'https://www.pixiv.net/',
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.36"
@@ -66,10 +66,10 @@ async def down_pic(datas, online_switch: int):
                     img_info = {'pid': pid,
                                 'base64': f"base64://{base64.b64encode(BytesIO(response.content).getvalue()).decode()}"}
                     return img_info
-                img_path = f'loliconImages/{pid}.{ext}'
+                img_path = f"loliconImages/{'r18/' if r18 else ''}{pid}.{ext}"
                 with open(img_path, 'wb') as f:
                     f.write(response.content)
-            except TimeoutError:
+            except ConnectTimeout:
                 pass
             except Exception as e:
                 raise e
