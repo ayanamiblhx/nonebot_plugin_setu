@@ -1,6 +1,14 @@
 <div align=center>
 	<img src="https://s4.ax1x.com/2022/03/05/bw2k9A.png" alt="bw2k9A.png" border="0"/>
 </div>
+<div align="center">
+	<a href="https://github.com/ayanamiblhx/nonebot_plugin_setu/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/ayanamiblhx/nonebot_plugin_setu?style=social"></a>
+    <a href="https://github.com/ayanamiblhx/nonebot_plugin_setu/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/ayanamiblhx/nonebot_plugin_setu?style=social"></a>
+    <a href="https://github.com/ayanamiblhx/nonebot_plugin_setu/network"><img alt="GitHub forks" src="https://img.shields.io/github/forks/ayanamiblhx/nonebot_plugin_setu?style=social"></a>
+    <a href="https://github.com/ayanamiblhx/nonebot_plugin_setu/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/ayanamiblhx/nonebot_plugin_setu?style=social"></a>
+</div>
+
+</div>
 
 # nonebot_plugin_setu
 
