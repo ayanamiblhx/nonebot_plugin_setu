@@ -55,14 +55,16 @@ async def _(bot: Bot, event: Event):
                 tags = re.sub(r'^涩图tag', '', msg).split('和')
                 if len(tags) > 3:
                     UserDao().delete_user_cd(event.get_user_id())
-                    await setu.finish('涩图tag最多只能有三个哦', at_sender=True)
+                    await setu.send('涩图tag最多只能有三个哦', at_sender=True)
+                    return 
                 else:
                     file_name = await get_url(num=1, tags=tags, online_switch=Config().online_switch, r18=r18)
                     if Config().online_switch == 0:
                         pid = re.sub(r'\D+', '', file_name)
                     if file_name == "":
                         UserDao().delete_user_cd(event.get_user_id())
-                        await setu.finish('没有找到相关涩图，请更换tag', at_sender=True)
+                        await setu.send('没有找到相关涩图，请更换tag', at_sender=True)
+                        return
             interval = 0 if not hasattr(event, 'group_id') else GroupDao().get_group_interval(event.group_id)
             if Config().online_switch == 1:
                 img = file_name if tag_flag == 1 else await get_url(num=1, online_switch=1, tags="", r18=r18)
