@@ -46,7 +46,7 @@
   
   - 在pyproject.toml里的`[tool.nonebot]`中添加`plugins = ["nonebot_plugin_setu"]`
   
-  **注：**如果你使用nb安装插件，则不需要设置此项
+  **注**：如果你使用nb安装插件，则不需要设置此项
 
 
 
