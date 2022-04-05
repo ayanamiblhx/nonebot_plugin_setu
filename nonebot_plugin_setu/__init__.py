@@ -28,7 +28,6 @@ api = on_regex(r"^涩图api$|^设置api地址.+$")
 withdraw_interval = on_regex(r"^撤回间隔0$|^撤回间隔[1-9]\d*$")
 r18_switch = on_regex(r"^开启涩涩$|^关闭涩涩$|^开启私聊涩涩$|^关闭私聊涩涩$")
 
-Config.create_file()
 super_user = Config().super_users
 driver = get_driver()
 driver.server_app.mount('/setu', setu_api, name='setu_plugin')
@@ -56,7 +55,7 @@ async def _(bot: Bot, event: Event):
                 if len(tags) > 3:
                     UserDao().delete_user_cd(event.get_user_id())
                     await setu.send('涩图tag最多只能有三个哦', at_sender=True)
-                    return 
+                    return
                 else:
                     file_name = await get_url(num=1, tags=tags, online_switch=Config().online_switch, r18=r18)
                     if Config().online_switch == 0:

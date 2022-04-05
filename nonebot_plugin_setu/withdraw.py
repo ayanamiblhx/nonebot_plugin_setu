@@ -9,7 +9,7 @@ scheduler = require("nonebot_plugin_apscheduler").scheduler
 
 def add_withdraw_job(bot: Bot, message_id: int, withdraw_interval: int = 0):
     if withdraw_interval:
-        logger.debug("撤回消息定时任务开启")
+        logger.info(f"{message_id} will be deleted in {withdraw_interval} seconds")
         scheduler.add_job(
             withdraw_msg,
             "date",

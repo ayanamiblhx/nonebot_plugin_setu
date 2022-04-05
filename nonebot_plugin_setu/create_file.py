@@ -1,6 +1,7 @@
 import json
 import os
 import sqlite3
+import pathlib
 
 setu_config = {
     'SUPERUSERS': [""],
@@ -13,9 +14,7 @@ setu_config = {
 
 class Config:
     def __init__(self):
-        if not os.path.exists('data/setu_config.json'):
-            with open('data/setu_config.json', 'w') as file:
-                json.dump(setu_config, file)
+        self.create_file()
         with open('data/setu_config.json', 'r') as file:
             self.config = json.load(file)
         self.super_users = self.config['SUPERUSERS']
@@ -26,10 +25,11 @@ class Config:
 
     @staticmethod
     def create_file():
+        pathlib.Path('data').mkdir(parents=True, exist_ok=True)
+        pathlib.Path('loliconImages/r18').mkdir(parents=True, exist_ok=True)
+        if not os.path.exists('data/setu_config.json'):
+            with open('data/setu_config.json', 'w', encoding='utf-8') as f:
+                json.dump(setu_config, f, ensure_ascii=False, indent=4)
         if not os.path.exists('data/lolicon.db'):
             conn = sqlite3.connect('data/lolicon.db')
             conn.close()
-        if not os.path.exists('loliconImages/r18'):
-            os.mkdir('loliconImages/r18')
-        if not os.path.exists('data'):
-            os.mkdir('data')
