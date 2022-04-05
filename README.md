@@ -1,20 +1,19 @@
-<div align=center>
-	<img src="https://s4.ax1x.com/2022/03/05/bw2k9A.png" alt="bw2k9A.png" border="0"/>
+
+
 </div>
+
 <div align="center">
-	<a href="https://github.com/ayanamiblhx/nonebot_plugin_setu/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/ayanamiblhx/nonebot_plugin_setu?style=social"></a>
-    <a href="https://github.com/ayanamiblhx/nonebot_plugin_setu/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/ayanamiblhx/nonebot_plugin_setu?style=social"></a>
-    <a href="https://github.com/ayanamiblhx/nonebot_plugin_setu/network"><img alt="GitHub forks" src="https://img.shields.io/github/forks/ayanamiblhx/nonebot_plugin_setu?style=social"></a>
-    <a href="https://github.com/ayanamiblhx/nonebot_plugin_setu/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/ayanamiblhx/nonebot_plugin_setu?style=social"></a>
+    <img src="https://s4.ax1x.com/2022/03/05/bw2k9A.png" alt="bw2k9A.png" border="0"/>
+    <h1>nonebot_plugin_setu</h1>
+    <b>基于nonebot2、loliconApi的涩图插件</b>
+    <br/>
+    <a href="https://github.com/ayanamiblhx/nonebot_plugin_setu/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/ayanamiblhx/nonebot_plugin_setu?color=%09%2300BFFF&style=flat-square"></a>
+    <a href="https://github.com/ayanamiblhx/nonebot_plugin_setu/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/ayanamiblhx/nonebot_plugin_setu?color=Emerald%20green&style=flat-square"></a>
+    <a href="https://github.com/ayanamiblhx/nonebot_plugin_setu/network"><img alt="GitHub forks" src="https://img.shields.io/github/forks/ayanamiblhx/nonebot_plugin_setu?color=%2300BFFF&style=flat-square"></a>
+    <a href="https://github.com/ayanamiblhx/nonebot_plugin_setu/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/ayanamiblhx/nonebot_plugin_setu?color=Emerald%20green&style=flat-square"></a>
 </div>
 
 </div>
-
-# nonebot_plugin_setu
-
-基于nonebot2、loliconApi的涩图插件
-
-
 
 ## 安装及更新
 
@@ -40,8 +39,6 @@
   PROXIES_SOCKS = 'SOCKS5魔法地址(例如`socks5://127.0.0.1:10808`)，这与你使用的魔法有关'
 
   **注**：若没有魔法或者不会设置可不填
-
-  
 
 - **在bot.py中添加：**
   `nonebot.load_plugin("nonebot_plugin_setu")`
