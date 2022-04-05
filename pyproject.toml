@@ -10,6 +10,7 @@ readme="README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
+nonebot-plugin-apscheduler = "^0.1.2"
 httpx = "^0.21.3"
 httpx-socks = "^0.7.3"
 nonebot2 = "^2.0.0b2"

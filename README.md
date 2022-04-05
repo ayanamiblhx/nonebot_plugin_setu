@@ -1,6 +1,6 @@
 
 
-</div>
+
 
 <div align="center">
     <img src="https://s4.ax1x.com/2022/03/05/bw2k9A.png" alt="bw2k9A.png" border="0"/>
@@ -12,9 +12,6 @@
     <a href="https://github.com/ayanamiblhx/nonebot_plugin_setu/network"><img alt="GitHub forks" src="https://img.shields.io/github/forks/ayanamiblhx/nonebot_plugin_setu?color=%2300BFFF&style=flat-square"></a>
     <a href="https://github.com/ayanamiblhx/nonebot_plugin_setu/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/ayanamiblhx/nonebot_plugin_setu?color=Emerald%20green&style=flat-square"></a>
 </div>
-
-</div>
-
 ## 安装及更新
 
 - 使用`nb plugin install nonebot_plugin_setu`或者`pip install nonebot_plugin_setu`来进行安装
@@ -42,11 +39,11 @@
 
 - **导入插件(两种方式二选一)**
   
-  - 在bot.py中添加`nonebot.load_plugin("nonebot_plugin_setu")`
+  - 在`bot.py`中添加`nonebot.load_plugin("nonebot_plugin_setu")`
   
-  - 在pyproject.toml里的`[tool.nonebot]`中添加`plugins = ["nonebot_plugin_setu"]`
+  - 在`pyproject.toml`里的`[tool.nonebot]`中添加`plugins = ["nonebot_plugin_setu"]`
   
-  **注**：如果你使用nb安装插件，则不需要设置此项
+  **注**：如果你使用`nb`安装插件，则不需要设置此项
 
 
 
@@ -84,7 +81,7 @@
 
 
 
-# 更新日志
+## 更新日志
 
 ### 2022/4/2[v1.0.14]
 
