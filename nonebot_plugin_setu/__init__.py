@@ -41,7 +41,7 @@ async def _(bot: Bot, event: Event):
     images = os.listdir(img_path)
     if r18 == 0:
         images.remove('r18')
-    file_name = images[random.randint(0, len(os.listdir(img_path)) - 1)]
+    file_name = images[random.randint(0, len(images) - 1)]
     pid = re.sub(r'\D+', '', file_name)
     remain_time = 0 if event.get_user_id() in Config().super_users else UserDao().get_user_remain_time(
         event.get_user_id(), event.group_id)

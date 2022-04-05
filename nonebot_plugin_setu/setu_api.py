@@ -6,7 +6,7 @@ from .dao.image_dao import ImageDao
 
 setu_api = FastAPI(
     title="涩图Api",
-    version="1.0.18",
+    version="1.0.19",
     contact={
         "name": "nonebot_plugin_setu",
         "url": "https://github.com/ayanamiblhx/nonebot_plugin_setu"
