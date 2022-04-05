@@ -40,8 +40,13 @@
 
   **注**：若没有魔法或者不会设置可不填
 
-- **在bot.py中添加：**
-  `nonebot.load_plugin("nonebot_plugin_setu")`
+- **导入插件(两种方式二选一)**
+  
+  - 在bot.py中添加`nonebot.load_plugin("nonebot_plugin_setu")`
+  
+  - 在pyproject.toml里的`[tool.nonebot]`中添加`plugins = ["nonebot_plugin_setu"]`
+  
+  **注：**如果你使用nb安装插件，则不需要设置此项
 
 
 
