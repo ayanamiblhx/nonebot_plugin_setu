@@ -1,21 +1,15 @@
-from datetime import datetime, timedelta
-
-from nonebot import require
+import asyncio
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot.log import logger
 
-scheduler = require("nonebot_plugin_apscheduler").scheduler
 
-
-def add_withdraw_job(bot: Bot, message_id: int, withdraw_interval: int = 0):
+async def add_withdraw_job(bot: Bot, message_id: int, withdraw_interval: int = 0):
     if withdraw_interval:
-        logger.info(f"{message_id} will be deleted in {withdraw_interval} seconds")
-        scheduler.add_job(
-            withdraw_msg,
-            "date",
-            args=[bot, message_id],
-            run_date=datetime.now() + timedelta(seconds=withdraw_interval),
-        )
+        tasks = []
+        logger.info(f'添加撤回定时任务，撤回间隔：{withdraw_interval}秒')
+        tasks.append(withdraw_msg(bot, message_id))
+        await asyncio.sleep(withdraw_interval)
+        asyncio.gather(*tasks).add_done_callback(lambda x: logger.info(f'撤回任务已完成，撤回消息id：{message_id}'))
 
 
 async def withdraw_msg(bot: Bot, message_id: int):

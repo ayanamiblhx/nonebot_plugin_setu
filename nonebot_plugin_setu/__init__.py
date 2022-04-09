@@ -69,11 +69,11 @@ async def _(bot: Bot, event: Event):
                 img = file_name if tag_flag == 1 else await get_url(num=1, online_switch=1, tags="", r18=r18)
                 msg_info = await setu.send(MessageSegment.image(img['base64']) +
                                            f"https://www.pixiv.net/artworks/{img['pid']}", at_sender=True)
-                add_withdraw_job(bot, **msg_info, withdraw_interval=interval)
+                await add_withdraw_job(bot, **msg_info, withdraw_interval=interval)
                 return
             msg_info = await setu.send(MessageSegment.image(f"file:///{img_path.joinpath(file_name)}") +
                                        f"https://www.pixiv.net/artworks/{pid}", at_sender=True)
-            add_withdraw_job(bot, **msg_info, withdraw_interval=interval)
+            await add_withdraw_job(bot, **msg_info, withdraw_interval=interval)
         except Exception as e:
             logger.error(f'机器人被风控了{e}')
             UserDao().delete_user_cd(event.get_user_id())
