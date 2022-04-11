@@ -37,14 +37,16 @@ driver.server_app.mount('/setu', setu_api, name='setu_plugin')
 async def _(bot: Bot, event: Event):
     r18 = UserDao().get_r18_private_chat() \
         if not hasattr(event, 'group_id') else GroupDao().get_group_r18(event.group_id)
+    if img_num_detect(r18) == 0:
+        await setu.send('没有涩图啦，请下载或使用在线模式', at_sender=True)
+        return
     img_path = Path(f"loliconImages{'/r18' if r18 else ''}").resolve()
     images = os.listdir(img_path)
     if r18 == 0:
         images.remove('r18')
-    file_name = images[random.randint(0, len(images) - 1)]
+    file_name = '' if Config().online_switch else images[random.randint(0, len(images) - 1)]
     pid = re.sub(r'\D+', '', file_name)
-    remain_time = 0 if event.get_user_id() in Config().super_users else UserDao().get_user_remain_time(
-        event.get_user_id(), event.group_id)
+    remain_time = 0 if event.get_user_id() in Config().super_users else UserDao().get_user_remain_time(event)
     if remain_time == 0:
         try:
             msg = event.get_plaintext()
@@ -84,6 +86,16 @@ async def _(bot: Bot, event: Event):
         await setu.finish(f'要等{hour}小时{minute}分钟才能再要涩图哦', at_sender=True)
 
 
+def img_num_detect(r18: int):
+    if os.listdir('loliconImages').__len__() == 1 and not Config().online_switch:
+        return 0
+    elif os.listdir('loliconImages/r18').__len__() == 0 \
+            and r18 == 1 and not Config().online_switch:
+        return 0
+    else:
+        return 1
+
+
 @downLoad.handle()
 async def _(bot: Bot, event: Event):
     num = int(re.search(r"\d+", event.get_plaintext()).group())
@@ -114,7 +126,7 @@ async def _(bot: Bot, event: Event):
     if user_id in super_user:
         user_id = msg[0].get('data')['qq']
         cd = int(event.get_plaintext().replace(' cd', ''))
-        user = UserDao().get_user(user_id)
+        user = UserDao().get_user_cd(user_id)
         if user is None:
             UserDao().add_user_cd(user_id, UserDao.datetime_to_seconds(datetime.now()), cd)
         else:

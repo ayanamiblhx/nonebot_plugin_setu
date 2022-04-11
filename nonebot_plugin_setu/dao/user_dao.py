@@ -2,8 +2,9 @@ import sqlite3
 import time
 from datetime import datetime
 from .group_dao import GroupDao
+from nonebot.adapters.onebot.v11 import Event
 
-DEFAULT_GROUP_CD = 3600
+DEFAULT_CD = 3600
 
 
 class UserDao:
@@ -24,7 +25,7 @@ class UserDao:
         time_str = time_obj.strftime("%Y-%m-%d %H:%M:%S")
         return int(time.mktime(datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S").timetuple()))
 
-    def get_user(self, user_id):
+    def get_user_cd(self, user_id):
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         cursor.execute(f"SELECT * FROM user_cd WHERE user_id = '{user_id}'")
@@ -46,28 +47,33 @@ class UserDao:
         conn.close()
         pass
 
-    def get_user_remain_time(self, user_id, group_id):
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        user = self.get_user(user_id)
+    def get_user_remain_time(self, event: Event):
+        user_id = event.get_user_id()
+        user_cd = self.get_user_cd(user_id)
         this_time = self.datetime_to_seconds(datetime.now())
-        if user is None:
+        if not hasattr(event, 'group_id'):
+            if user_cd is None:
+                self.add_user_cd(user_id, this_time, -1)
+                return 0
+            else:
+                cd = DEFAULT_CD if user_cd['cd'] == -1 else user_cd['cd']
+                if this_time - user_cd['last_time'] < cd:
+                    return cd - (this_time - user_cd['last_time'])
+                else:
+                    self.update_user_cd(user_id, this_time, user_cd['cd'])
+                    return 0
+        else:
+            group_id = event.group_id
+        if user_cd is None:
             cd = GroupDao().get_group_cd(group_id)
             if cd is None:
-                cd = DEFAULT_GROUP_CD
+                cd = DEFAULT_CD
                 GroupDao().set_group_cd(group_id, cd)
             self.add_user_cd(user_id, this_time, -1)
-            conn.commit()
-            conn.close()
             return 0
-        if user['cd'] == -1:
-            cd = GroupDao().get_group_cd(group_id)
-        else:
-            cd = user['cd']
-        cursor.execute(f"SELECT last_time FROM user_cd WHERE user_id = '{user_id}'")
-        last_time = cursor.fetchone()
-        conn.close()
-        time_diff = this_time - last_time[0]
+        cd = GroupDao().get_group_cd(group_id) if user_cd['cd'] == -1 else user_cd['cd']
+        last_time = user_cd['last_time']
+        time_diff = this_time - last_time
         if time_diff >= cd:
             self.update_user_cd(user_id, this_time, '')
             return 0
