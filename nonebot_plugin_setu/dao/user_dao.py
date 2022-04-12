@@ -22,8 +22,7 @@ class UserDao:
 
     @staticmethod
     def datetime_to_seconds(time_obj):
-        time_str = time_obj.strftime("%Y-%m-%d %H:%M:%S")
-        return int(time.mktime(datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S").timetuple()))
+        return int(time_obj.timestamp())
 
     def get_user_cd(self, user_id):
         conn = sqlite3.connect(self.db_path)
