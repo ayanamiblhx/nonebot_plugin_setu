@@ -110,7 +110,6 @@ class UserDao:
             return 0
         conn.close()
         return r18[1]
-        pass
 
     def set_or_update_r18(self, r18: int = 0):
         conn = sqlite3.connect(self.db_path)
