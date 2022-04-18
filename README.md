@@ -24,7 +24,9 @@
 
 首先运行一遍robot，然后在robot目录的data目录下修改setu_config.json配置文件，然后重启robot
 
-
+<p align="center">
+    <a href="https://asciinema.org/a/488190"><img src="https://pan.freeload.icu/api/v3/file/source/61/setu_config.svg?sign=HE8H1qVEnrLJtPgTtiXtjW0LXdQ29NScguGy2-iNK64%3D%3A0"/></a>
+</p>
 
 ### 添加配置
 
