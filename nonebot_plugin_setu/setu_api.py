@@ -1,13 +1,14 @@
-from fastapi import FastAPI, Query, Body
 from typing import List, Optional
+
+import pkg_resources
+from fastapi import FastAPI, Query, Body
 from pydantic import BaseModel, Field
-from fastapi.responses import RedirectResponse
 
 from .dao.image_dao import ImageDao
 
 setu_api = FastAPI(
     title="涩图Api",
-    version="1.1.1",
+    version=pkg_resources.get_distribution("nonebot_plugin_setu").version,
     contact={
         "name": "nonebot_plugin_setu",
         "url": "https://github.com/ayanamiblhx/nonebot_plugin_setu"
