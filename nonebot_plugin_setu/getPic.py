@@ -27,7 +27,6 @@ async def get_url(num: int, online_switch: int, tags: list, r18: int = 0):
         try:
             for i in range(times):
                 num = 20 if i != times - 1 else remain
-                print(num)
                 if num == 0:
                     break
                 req_url = f"https://api.lolicon.app/setu/v2?num={num}"
