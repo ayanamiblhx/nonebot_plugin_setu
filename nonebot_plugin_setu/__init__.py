@@ -5,10 +5,10 @@ import re
 from datetime import datetime
 from pathlib import Path
 
+from nonebot import get_driver
 from nonebot.adapters.onebot.v11 import Bot, Message, Event, MessageSegment
 from nonebot.log import logger
 from nonebot.plugin import on_regex
-from nonebot import get_driver
 
 from .create_file import Config
 from .dao.group_dao import GroupDao
@@ -27,6 +27,7 @@ proxy_switch = on_regex(r"^开启魔法$|^关闭魔法$")
 api = on_regex(r"^涩图api$|^设置api地址.+$")
 withdraw_interval = on_regex(r"^撤回间隔0$|^撤回间隔[1-9]\d*$")
 r18_switch = on_regex(r"^开启涩涩$|^关闭涩涩$|^开启私聊涩涩$|^关闭私聊涩涩$")
+setu_help = on_regex(r"^涩图帮助$")
 
 super_user = Config().super_users
 driver = get_driver()
@@ -97,7 +98,7 @@ def img_num_detect(r18: int):
 
 
 @downLoad.handle()
-async def _(bot: Bot, event: Event):
+async def _(event: Event):
     num = int(re.search(r"\d+", event.get_plaintext()).group())
     if event.get_user_id() in super_user:
         try:
@@ -202,7 +203,7 @@ async def _(bot: Bot, event: Event):
 
 
 @api.handle()
-async def _(bot: Bot, event: Event):
+async def _(event: Event):
     msg = event.get_plaintext()
     if msg == '涩图api':
         if ImageDao().get_api() is None:
@@ -220,7 +221,7 @@ async def _(bot: Bot, event: Event):
 
 
 @r18_switch.handle()
-async def _(bot: Bot, event: Event):
+async def _(event: Event):
     msg = event.get_plaintext()
     if event.get_user_id() in super_user:
         if msg == "开启涩涩" or msg == "关闭涩涩":
@@ -233,3 +234,28 @@ async def _(bot: Bot, event: Event):
             await r18_switch.finish(f"{msg}成功")
     else:
         await r18_switch.finish('只有主人才有权限哦', at_sender=True)
+
+
+@setu_help.handle()
+async def _():
+    import pkg_resources
+    try:
+        _dist: pkg_resources.Distribution = pkg_resources.get_distribution("nonebot_plugin_setu")
+        _help = f'涩图插件版本：{_dist.version}\n' \
+                '主人专用:\n' \
+                '1、下载涩图：下载涩图+数量，例如：下载涩图20\n' \
+                '2、指定用户cd：@用户cd+时间（秒），例如：@张三cd123\n' + \
+                '3、指定群cd：群cd+时间（秒），例如群cd123\n' \
+                '4、指定图片是否存储：开启/关闭在线发图\n' \
+                '5、指定获取图片是否使用代理：开启/关闭魔法\n' \
+                '6、指定撤回间隔：撤回间隔+时间（秒），例如：撤回间隔123\n' \
+                '7、指定api地址：设置api地址+地址，例如：设置api地址123.456.789.111:8080\n' \
+                '8、获取api地址：涩图api\n' \
+                '9、开启/关闭涩涩：开启/关闭涩涩，开启/关闭私聊涩涩。用于指定是否开启r18\n' \
+                '全员可用功能:\n' \
+                '1、发送涩图：涩图、setu、无内鬼、色图' \
+                '2、指定tag：涩图tagA(和B和C)，最多指定三个tag'
+        await setu_help.send(_help, at_sender=True)
+    except Exception as e:
+        logger.error(e)
+        await setu_help.send(f'出错了，错误信息{e}', at_sender=True)
