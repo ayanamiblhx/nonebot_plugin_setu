@@ -243,7 +243,7 @@ async def _():
         _dist: pkg_resources.Distribution = pkg_resources.get_distribution("nonebot_plugin_setu")
         _help = f'涩图插件版本：{_dist.version}\n' \
                 '主人专用:\n' \
-                '1、下载涩图：下载涩图+数量，例如：下载涩图20\n' \
+                '1、下载涩图：下载涩图(非r18)+数量，下载色图(r18)+数量，例如：下载涩图20，下载色图333\n' \
                 '2、指定用户cd：@用户cd+时间（秒），例如：@张三cd123\n' + \
                 '3、指定群cd：群cd+时间（秒），例如群cd123\n' \
                 '4、指定图片是否存储：开启/关闭在线发图\n' \
