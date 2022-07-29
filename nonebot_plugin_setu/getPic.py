@@ -20,13 +20,16 @@ async def get_url(num: int, online_switch: int, tags: list, r18: int = 0):
         "size": 'regular',
         "tag": tags,
     }
-    async with AsyncClient() as client:
-        times = int(num / 100) + 1
-        remain = num % 100
+    async with AsyncClient(proxies=None) as client:
+        times = int(num / 20) + 1
+        remain = num % 20
         datas = []
         try:
             for i in range(times):
-                num = 100 if i != times - 1 else remain
+                num = 20 if i != times - 1 else remain
+                print(num)
+                if num == 0:
+                    break
                 req_url = f"https://api.lolicon.app/setu/v2?num={num}"
                 res = await client.get(req_url, params=params, headers=head, timeout=10.0)
                 res = json.loads(res.text)
