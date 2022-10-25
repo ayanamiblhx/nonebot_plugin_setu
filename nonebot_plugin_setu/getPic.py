@@ -2,7 +2,7 @@ import base64
 import json
 from io import BytesIO
 
-from httpx import AsyncClient, ConnectTimeout
+from httpx import AsyncClient, HTTPError
 from nonebot.log import logger
 from tqdm import tqdm
 
@@ -24,24 +24,24 @@ async def get_url(num: int, online_switch: int, tags: list, r18: int = 0):
         times = int(num / 20) + 1
         remain = num % 20
         datas = []
-        try:
-            for i in range(times):
-                num = 20 if i != times - 1 else remain
-                if num == 0:
-                    break
-                req_url = f"https://api.lolicon.app/setu/v2?num={num}"
+        for i in range(times):
+            num = 20 if i != times - 1 else remain
+            if num == 0:
+                break
+            req_url = f"https://api.lolicon.app/setu/v2?num={num}"
+            try:
                 res = await client.get(req_url, params=params, headers=head, timeout=10.0)
-                res = json.loads(res.text)
-                data = res['data']
-                if not data:
-                    return ""
-                datas.extend(data)
-            ImageDao().add_images(datas)
-            img = await down_pic(datas, online_switch, r18)
-            return img
-        except Exception as e:
-            logger.error(e)
-            raise e
+            except HTTPError as e:
+                logger.error(e)
+                raise e
+            res = json.loads(res.text)
+            data = res['data']
+            if not data:
+                return ""
+            datas.extend(data)
+        ImageDao().add_images(datas)
+        img = await down_pic(datas, online_switch, r18)
+        return img
 
 
 async def down_pic(datas, online_switch: int, r18: int = 0):
@@ -71,9 +71,7 @@ async def down_pic(datas, online_switch: int, r18: int = 0):
                 img_path = f"loliconImages/{'r18/' if r18 else ''}{pid}.{ext}"
                 with open(img_path, 'wb') as f:
                     f.write(response.content)
-            except ConnectTimeout:
-                pass
-            except Exception as e:
-                raise e
+            except HTTPError as e:
+                logger.error(e)
         pbar.close()
         return tag_img
