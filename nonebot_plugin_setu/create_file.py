@@ -33,3 +33,12 @@ class Config:
         if not os.path.exists('data/lolicon.db'):
             conn = sqlite3.connect('data/lolicon.db')
             conn.close()
+
+    def get_file_args(self, args_name: str):
+        with open('data/setu_config.json', 'r', encoding='utf-8') as file:
+            content = json.load(file)
+            if not args_name in content:
+                content.update({args_name: ' '})
+                with open('data/setu_config.json', 'w', encoding='utf-8') as file_new:
+                    json.dump(content, file_new, indent=4)
+            return content[args_name]
