@@ -16,6 +16,7 @@ from .dao.image_dao import ImageDao
 from .dao.user_dao import UserDao
 from .getPic import get_url, down_pic
 from .setu_api import setu_api
+from .utils import send_forward_msg, get_file_num, img_num_detect
 from .withdraw import add_withdraw_job
 
 setu = on_regex("^涩图$|^setu$|^无内鬼$|^色图$|^涩图tag.+$")
@@ -28,6 +29,7 @@ api = on_regex(r"^涩图api$|^设置api地址.+$")
 withdraw_interval = on_regex(r"^撤回间隔0$|^撤回间隔[1-9]\d*$")
 r18_switch = on_regex(r"^开启涩涩$|^关闭涩涩$|^开启私聊涩涩$|^关闭私聊涩涩$")
 setu_help = on_regex(r"^涩图帮助$")
+msg_forward_name = on_regex(r"^涩图转发者名字.+$")
 
 super_user = Config().super_users
 driver = get_driver()
@@ -36,8 +38,10 @@ driver.server_app.mount('/setu', setu_api, name='setu_plugin')
 
 @setu.handle()
 async def _(bot: Bot, event: Event):
+    bot_name = Config().get_file_args(args_name='FORWARD_NAME')
+    is_group_chat = hasattr(event, 'group_id')
     r18 = UserDao().get_r18_private_chat() \
-        if not hasattr(event, 'group_id') else GroupDao().get_group_r18(event.group_id)
+        if not is_group_chat else GroupDao().get_group_r18(event.group_id)
     if img_num_detect(r18) == 0:
         await setu.send('没有涩图啦，请下载或使用在线模式', at_sender=True)
         return
@@ -49,33 +53,38 @@ async def _(bot: Bot, event: Event):
     pid = re.sub(r'\D+', '', file_name)
     remain_time = 0 if event.get_user_id() in Config().super_users else UserDao().get_user_remain_time(event)
     if remain_time == 0:
-        try:
-            msg = event.get_plaintext()
-            tag_flag = 0
-            if bool(re.search(r"^涩图tag.+$", msg)):
-                tag_flag = 1
-                tags = re.sub(r'^涩图tag', '', msg).split('和')
-                if len(tags) > 3:
-                    UserDao().delete_user_cd(event.get_user_id())
-                    await setu.send('涩图tag最多只能有三个哦', at_sender=True)
-                    return
-                else:
+        msg = event.get_plaintext()
+        tag_flag = 0
+        if bool(re.search(r"^涩图tag.+$", msg)):
+            tag_flag = 1
+            tags = re.sub(r'^涩图tag', '', msg).split('和')
+            if len(tags) > 3:
+                UserDao().delete_user_cd(event.get_user_id())
+                await setu.send('涩图tag最多只能有三个哦', at_sender=True)
+                return
+            else:
+                try:
                     file_name = await get_url(num=1, tags=tags, online_switch=Config().online_switch, r18=r18)
-                    if Config().online_switch == 0:
-                        pid = re.sub(r'\D+', '', file_name)
-                    if file_name == "":
-                        UserDao().delete_user_cd(event.get_user_id())
-                        await setu.send('没有找到相关涩图，请更换tag', at_sender=True)
-                        return
-            interval = 0 if not hasattr(event, 'group_id') else GroupDao().get_group_interval(event.group_id)
+                except Exception as e:
+                    logger.error(f"获取涩图出错：{e}")
+                    UserDao().delete_user_cd(event.get_user_id())
+                    await setu.finish(message=Message('网络错误，请重试'), at_sender=True)
+                if Config().online_switch == 0:
+                    pid = re.sub(r'\D+', '', file_name)
+                if file_name == "":
+                    UserDao().delete_user_cd(event.get_user_id())
+                    await setu.send('没有找到相关涩图，请更换tag', at_sender=True)
+                    return
+        interval = 0 if not is_group_chat else GroupDao().get_group_interval(event.group_id)
+        try:
             if Config().online_switch == 1:
                 img = file_name if tag_flag == 1 else await get_url(num=1, online_switch=1, tags="", r18=r18)
-                msg_info = await setu.send(MessageSegment.image(img['base64']) +
-                                           f"https://www.pixiv.net/artworks/{img['pid']}", at_sender=True)
-                await add_withdraw_job(bot, **msg_info, withdraw_interval=interval)
-                return
-            msg_info = await setu.send(MessageSegment.image(f"file:///{img_path.joinpath(file_name)}") +
-                                       f"https://www.pixiv.net/artworks/{pid}", at_sender=True)
+                message_list = [MessageSegment.image(img['base64']), f"https://pixiv.net/artworks/{img['pid']}"]
+                msg_info = await send_forward_msg(bot, event, bot_name, bot.self_id, message_list, is_group_chat)
+            else:
+                message_list = [MessageSegment.image(f"file:///{img_path.joinpath(file_name)}"),
+                                f"https://pixiv.net/artworks/{pid}"]
+                msg_info = await send_forward_msg(bot, event, bot_name, bot.self_id, message_list, is_group_chat)
             await add_withdraw_job(bot, **msg_info, withdraw_interval=interval)
         except Exception as e:
             logger.error(f'机器人被风控了{e}')
@@ -87,14 +96,18 @@ async def _(bot: Bot, event: Event):
         await setu.finish(f'要等{hour}小时{minute}分钟才能再要涩图哦', at_sender=True)
 
 
-def img_num_detect(r18: int):
-    if os.listdir('loliconImages').__len__() == 1 and not Config().online_switch:
-        return 0
-    elif os.listdir('loliconImages/r18').__len__() == 0 \
-            and r18 == 1 and not Config().online_switch:
-        return 0
+@msg_forward_name.handle()
+async def _(bot: Bot, event: Event):
+    if event.get_user_id() in super_user:
+        forward_name = re.sub(r"^涩图转发者名字", '', event.get_plaintext())
+        with open('data/setu_config.json', 'r', encoding='utf-8') as f:
+            content = json.load(f)
+            content['FORWARD_NAME'] = forward_name
+            with open('data/setu_config.json', 'w', encoding='utf-8') as f_new:
+                json.dump(content, f_new, indent=4)
+                await bot.send(message=f"修改涩图转发者名字为{forward_name}成功", event=event, at_sender=True)
     else:
-        return 1
+        await msg_forward_name.send("只有主人才有权限哦",at_sender=True)
 
 
 @downLoad.handle()
@@ -113,15 +126,8 @@ async def _(event: Event):
         await downLoad.send('只有主人才有权限哦', at_sender=True)
 
 
-def get_file_num(path):
-    file_num = 0
-    for root, dirs, files in os.walk(path):
-        file_num += len(files)
-    return file_num
-
-
 @user_cd.handle()
-async def _(bot: Bot, event: Event):
+async def _(event: Event):
     msg = event.get_message()
     user_id = event.get_user_id()
     if user_id in super_user:
@@ -248,10 +254,11 @@ async def _():
                 '3、指定群cd：群cd+时间（秒），例如群cd123\n' \
                 '4、指定图片是否存储：开启/关闭在线发图\n' \
                 '5、指定获取图片是否使用代理：开启/关闭魔法\n' \
-                '6、指定撤回间隔：撤回间隔+时间（秒），例如：撤回间隔123\n' \
+                '6、指定撤回间隔：撤回间隔+时间（秒），例如：撤回间隔123，撤回间隔为0时将不进行撤回\n' \
                 '7、指定api地址：设置api地址+地址，例如：设置api地址123.456.789.111:8080\n' \
                 '8、获取api地址：涩图api\n' \
                 '9、开启/关闭涩涩：开启/关闭涩涩，开启/关闭私聊涩涩。用于指定是否开启r18\n' \
+                '10、修改涩图转发者名字：涩图转发者名字+你要修改的名字，例如：涩图转发者名字bot\n' \
                 '全员可用功能:\n' \
                 '1、发送涩图：涩图、setu、无内鬼、色图' \
                 '2、指定tag：涩图tagA(和B和C)，最多指定三个tag'
