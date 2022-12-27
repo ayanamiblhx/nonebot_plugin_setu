@@ -3,7 +3,7 @@ from typing import List
 
 from nonebot.adapters.onebot.v11 import Bot, Message, Event
 
-from src.plugins.nonebot_plugin_setu import Config
+from .create_file import Config
 
 
 async def send_forward_msg(
