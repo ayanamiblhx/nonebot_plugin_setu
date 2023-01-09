@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot_plugin_setu"
-version = "1.1.7"
+version = "1.1.8"
 description = "基于lolicon api的涩图插件"
 authors = ["ayanamiblhx <1196818079@qq.com>"]
 license = "Apache License 2.0"
