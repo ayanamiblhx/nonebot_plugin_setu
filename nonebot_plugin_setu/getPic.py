@@ -39,7 +39,8 @@ async def get_url(num: int, online_switch: int, tags: list = "", r18: int = 0):
                     if flag > 10:
                         raise Exception(f"获取api内容失败次数过多，请检查网络链接")
                     res = await client.get(req_url, params=params, headers=head, timeout=10)
-                    break
+                    if res.status_code == 200:
+                        break
                 except TimeoutException as e:
                     logger.error(f"获取loliconAPI内容超时{type(e)}")
                 except HTTPError as e:
@@ -82,7 +83,8 @@ async def down_pic(datas, online_switch: int, r18: int = 0):
                     if flag > 10:
                         raise Exception(f"获取图片内容失败次数过多，请检查网络链接")
                     response = await client.get(url=url, headers=head, timeout=10)
-                    break
+                    if response.status_code == 200:
+                        break
                 except TimeoutException as e:
                     logger.error(f"获取图片内容超时: {type(e)}")
                 except HTTPError as e:
