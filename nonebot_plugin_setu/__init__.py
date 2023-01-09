@@ -5,8 +5,10 @@ import re
 from datetime import datetime
 from pathlib import Path
 
+import httpx
 from nonebot import get_driver
 from nonebot.adapters.onebot.v11 import Bot, Message, Event, MessageSegment
+from nonebot.exception import NoneBotException
 from nonebot.log import logger
 from nonebot.plugin import on_regex
 
@@ -52,48 +54,53 @@ async def _(bot: Bot, event: Event):
     file_name = '' if Config().online_switch else images[random.randint(0, len(images) - 1)]
     pid = re.sub(r'\D+', '', file_name)
     remain_time = 0 if event.get_user_id() in Config().super_users else UserDao().get_user_remain_time(event)
-    if remain_time == 0:
-        msg = event.get_plaintext()
-        tag_flag = 0
-        if bool(re.search(r"^涩图tag.+$", msg)):
-            tag_flag = 1
-            tags = re.sub(r'^涩图tag', '', msg).split('和')
-            if len(tags) > 3:
-                UserDao().delete_user_cd(event.get_user_id())
-                await setu.send('涩图tag最多只能有三个哦', at_sender=True)
-                return
-            else:
-                try:
-                    file_name = await get_url(num=1, tags=tags, online_switch=Config().online_switch, r18=r18)
-                except Exception as e:
-                    logger.error(f"获取涩图出错：{e}")
-                    UserDao().delete_user_cd(event.get_user_id())
-                    await setu.finish(message=Message('网络错误，请重试'), at_sender=True)
-                if Config().online_switch == 0:
-                    pid = re.sub(r'\D+', '', file_name)
-                if file_name == "":
-                    UserDao().delete_user_cd(event.get_user_id())
-                    await setu.send('没有找到相关涩图，请更换tag', at_sender=True)
-                    return
-        interval = 0 if not is_group_chat else GroupDao().get_group_interval(event.group_id)
-        try:
-            if Config().online_switch == 1:
-                img = file_name if tag_flag == 1 else await get_url(num=1, online_switch=1, tags="", r18=r18)
-                message_list = [MessageSegment.image(img['base64']), f"https://pixiv.net/artworks/{img['pid']}"]
-                msg_info = await send_forward_msg(bot, event, bot_name, bot.self_id, message_list, is_group_chat)
-            else:
-                message_list = [MessageSegment.image(f"file:///{img_path.joinpath(file_name)}"),
-                                f"https://pixiv.net/artworks/{pid}"]
-                msg_info = await send_forward_msg(bot, event, bot_name, bot.self_id, message_list, is_group_chat)
-            await add_withdraw_job(bot, **msg_info, withdraw_interval=interval)
-        except Exception as e:
-            logger.error(f'机器人被风控了{e}')
-            UserDao().delete_user_cd(event.get_user_id())
-            await setu.finish(message=Message('机器人被风控了,本次涩图不计入cd'), at_sender=True)
-    else:
+    if remain_time != 0:
         hour = int(remain_time / 3600)
         minute = int((remain_time / 60) % 60)
         await setu.finish(f'要等{hour}小时{minute}分钟才能再要涩图哦', at_sender=True)
+    msg = event.get_plaintext()
+    tag_flag = 0
+    if bool(re.search(r"^涩图tag.+$", msg)):
+        tag_flag = 1
+        tags = re.sub(r'^涩图tag', '', msg).split('和')
+        if len(tags) > 3:
+            UserDao().delete_user_cd(event.get_user_id())
+            await setu.finish('涩图tag最多只能有三个哦', at_sender=True)
+        else:
+            try:
+                file_name = await get_url(num=1, tags=tags, online_switch=Config().online_switch, r18=r18)
+            except httpx.HTTPError:
+                UserDao().delete_user_cd(event.get_user_id())
+                await setu.finish(message=Message('网络错误，请重试'), at_sender=True)
+            except Exception as e:
+                UserDao().delete_user_cd(event.get_user_id())
+                await setu.finish(message=Message(f'{e}'), at_sender=True)
+            if Config().online_switch == 0:
+                pid = re.sub(r'\D+', '', file_name)
+            if file_name == "":
+                UserDao().delete_user_cd(event.get_user_id())
+                await setu.finish('没有找到相关涩图，请更换tag', at_sender=True)
+    interval = 0 if not is_group_chat else GroupDao().get_group_interval(event.group_id)
+    try:
+        if Config().online_switch == 1:
+            img = file_name if tag_flag == 1 else await get_url(num=1, online_switch=1, r18=r18)
+            message_list = [MessageSegment.image(img['base64']), f"https://pixiv.net/artworks/{img['pid']}"]
+            msg_info = await send_forward_msg(bot, event, bot_name, bot.self_id, message_list, is_group_chat)
+        else:
+            message_list = [MessageSegment.image(f"file:///{img_path.joinpath(file_name)}"),
+                            f"https://pixiv.net/artworks/{pid}"]
+            msg_info = await send_forward_msg(bot, event, bot_name, bot.self_id, message_list, is_group_chat)
+        await add_withdraw_job(bot, **msg_info, withdraw_interval=interval)
+    except httpx.HTTPError:
+        UserDao().delete_user_cd(event.get_user_id())
+        await setu.finish(message=Message('获取图片出错,本次涩图不计入cd'), at_sender=True)
+    except NoneBotException as e:
+        UserDao().delete_user_cd(event.get_user_id())
+        logger.error(f"{type(e)}")
+        await setu.finish(message=Message('机器人被风控了，本次涩图不计入cd'), at_sender=True)
+    except Exception as e:
+        UserDao().delete_user_cd(event.get_user_id())
+        await setu.finish(message=Message(f"{e},本次涩图不计入cd"), at_sender=True)
 
 
 @msg_forward_name.handle()
@@ -107,7 +114,7 @@ async def _(bot: Bot, event: Event):
                 json.dump(content, f_new, indent=4)
                 await bot.send(message=f"修改涩图转发者名字为{forward_name}成功", event=event, at_sender=True)
     else:
-        await msg_forward_name.send("只有主人才有权限哦",at_sender=True)
+        await msg_forward_name.send("只有主人才有权限哦", at_sender=True)
 
 
 @downLoad.handle()
@@ -117,11 +124,12 @@ async def _(event: Event):
         try:
             r18 = 1 if event.get_plaintext().find('色图') != -1 else 0
             await downLoad.send(f"开始下载...")
-            await get_url(num=num, online_switch=0, tags="", r18=r18)
+            await get_url(num=num, online_switch=0, r18=r18)
             await downLoad.send(f"下载涩图成功,图库中涩图数量{get_file_num('loliconImages')}", at_sender=True)
+        except httpx.HTTPError as e:
+            await downLoad.send(f"下载时出现异常{str(type(e))}", at_sender=True)
         except Exception as e:
-            logger.error(f'下载时出现异常{e}')
-            await downLoad.send(str(e), at_sender=True)
+            await downLoad.send(f"{e}", at_sender=True)
     else:
         await downLoad.send('只有主人才有权限哦', at_sender=True)
 
