@@ -15,18 +15,39 @@
 
 ## 安装及更新
 
-- 使用`nb plugin install nonebot_plugin_setu`或者`pip install nonebot_plugin_setu`来进行安装
-- 使用`nb plugin update nonebot_plugin_setu`或者`pip install nonebot_plugin_setu -U`来进行更新
+- 安装
 
+```bash
+nb plugin install nonebot_plugin_setu
+```
+或者
+```bash
+pip install nonebot_plugin_setu
+```
+推荐使用`nb`进行安装
+- 更新
+
+```bash
+nb plugin update nonebot_plugin_setu
+```
+或者
+```bash
+pip install nonebot_plugin_setu -U
+```
+- 导入插件
+  
+  在`pyproject.toml`里的`[tool.nonebot]`中添加`plugins = ["nonebot_plugin_setu"]`
+  
+  **注**：如果你使用`nb`安装插件，则不需要设置此项
 
 
 ## 使用方式
 
-首先运行一遍robot，然后在robot目录的data目录下修改setu_config.json配置文件，然后重启robot
-
 <p align="center">
     <a href="https://asciinema.org/a/488190"><img src="https://pan.freeload.icu/api/v3/file/source/61/setu_config.svg?sign=HE8H1qVEnrLJtPgTtiXtjW0LXdQ29NScguGy2-iNK64%3D%3A0"/></a>
 </p>
+
+首先运行一遍robot，然后在robot目录的data目录下修改setu_config.json配置文件，然后重启robot
 
 ### 添加配置
 
@@ -39,14 +60,6 @@
   PROXIES_SOCKS = 'SOCKS5魔法地址(例如`socks5://127.0.0.1:10808`)，这与你使用的魔法有关'
 
   **注**：若没有魔法或者不会设置可不填
-
-- **导入插件(两种方式二选一)**
-  
-  - 在`bot.py`中添加`nonebot.load_plugin("nonebot_plugin_setu")`
-  
-  - 在`pyproject.toml`里的`[tool.nonebot]`中添加`plugins = ["nonebot_plugin_setu"]`
-  
-  **注**：如果你使用`nb`安装插件，则不需要设置此项
 
 
 
