@@ -3,7 +3,7 @@ from nonebot.adapters.onebot.v11 import Bot
 from nonebot.log import logger
 
 
-async def add_withdraw_job(bot: Bot, message_id: int, withdraw_interval: int = 0):
+async def add_withdraw_job(bot: Bot, message_id: int, withdraw_interval: int = 0, **kwargs):
     if withdraw_interval:
         tasks = []
         logger.info(f'添加撤回定时任务，撤回间隔：{withdraw_interval}秒')

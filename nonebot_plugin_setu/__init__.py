@@ -45,8 +45,7 @@ async def _(bot: Bot, event: Event):
     r18 = UserDao().get_r18_private_chat() \
         if not is_group_chat else GroupDao().get_group_r18(event.group_id)
     if img_num_detect(r18) == 0:
-        await setu.send('没有涩图啦，请下载或使用在线模式', at_sender=True)
-        return
+        await setu.finish('没有涩图啦，请下载或使用在线模式', at_sender=True)
     img_path = Path(f"loliconImages{'/r18' if r18 else ''}").resolve()
     images = os.listdir(img_path)
     if r18 == 0:
