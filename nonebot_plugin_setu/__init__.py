@@ -12,7 +12,7 @@ from nonebot.exception import NoneBotException
 from nonebot.log import logger
 from nonebot.plugin import on_regex
 
-from .create_file import Config
+from .file_tools import Config
 from .dao.group_dao import GroupDao
 from .dao.image_dao import ImageDao
 from .dao.user_dao import UserDao
@@ -106,12 +106,8 @@ async def _(bot: Bot, event: Event):
 async def _(bot: Bot, event: Event):
     if event.get_user_id() in super_user:
         forward_name = re.sub(r"^涩图转发者名字", '', event.get_plaintext())
-        with open('data/setu_config.json', 'r', encoding='utf-8') as f:
-            content = json.load(f)
-            content['FORWARD_NAME'] = forward_name
-            with open('data/setu_config.json', 'w', encoding='utf-8') as f_new:
-                json.dump(content, f_new, indent=4)
-                await bot.send(message=f"修改涩图转发者名字为{forward_name}成功", event=event, at_sender=True)
+        Config.set_file_args('FORWARD_NAME', forward_name)
+        await bot.send(message=f"修改涩图转发者名字为{forward_name}成功", event=event, at_sender=True)
     else:
         await msg_forward_name.send("只有主人才有权限哦", at_sender=True)
 
@@ -173,12 +169,8 @@ async def _(bot: Bot, event: Event):
     msg = event.get_plaintext()
     switch = 1 if msg == "开启在线发图" else 0
     if event.get_user_id() in super_user:
-        with open('data/setu_config.json', 'r') as file:
-            configs = json.load(file)
-            configs['ONLINE_SWITCH'] = switch
-            with open('data/setu_config.json', 'w') as f:
-                json.dump(configs, f)
-                await online_switch.send(f'{msg}成功')
+        Config.set_file_args('ONLINE_SWITCH', switch)
+        await online_switch.send(f'{msg}成功')
     else:
         await online_switch.send('只有主人才有权限哦', at_sender=True)
 
@@ -188,12 +180,8 @@ async def _(bot: Bot, event: Event):
     msg = event.get_plaintext()
     switch = 1 if msg == "开启魔法" else 0
     if event.get_user_id() in super_user:
-        with open('data/setu_config.json', 'r') as file:
-            configs = json.load(file)
-            configs['PROXIES_SWITCH'] = switch
-            with open('data/setu_config.json', 'w') as f:
-                json.dump(configs, f)
-                await proxy_switch.send(f'{msg}成功')
+        Config.set_file_args('PROXIES_SWITCH', switch)
+        await proxy_switch.send(f'{msg}成功')
     else:
         await proxy_switch.send('只有主人才有权限哦', at_sender=True)
 
@@ -247,7 +235,6 @@ async def _(event: Event):
             await r18_switch.finish(f"{msg}成功")
     else:
         await r18_switch.finish('只有主人才有权限哦', at_sender=True)
-
 
 @setu_help.handle()
 async def _():
