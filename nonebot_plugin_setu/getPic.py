@@ -6,7 +6,7 @@ from httpx import AsyncClient, TimeoutException, HTTPError
 from nonebot.log import logger
 from tqdm import tqdm
 
-from .create_file import Config
+from .file_tools import Config
 from .dao.image_dao import ImageDao
 from .proxies import proxy_http, proxy_socks
 
@@ -70,8 +70,8 @@ async def down_pic(datas, online_switch: int, r18: int = 0):
         pbar = tqdm(datas, desc='Downloading', colour='green')
         tag_img = ""
         for data in datas:
-            proxy_url = data['urls']['regular'].replace('i.pixiv.cat', 'i.pximg.net')
-            url = data['urls']['regular'].replace('i.pixiv.cat', 'i.pixiv.re')
+            proxy_url = data['urls']['regular'].replace('i.pixiv.re', 'i.pximg.net')
+            url = data['urls']['regular']
             url = proxy_url if Config().proxies_switch else url
             pid = data['pid']
             ext = data['ext']
