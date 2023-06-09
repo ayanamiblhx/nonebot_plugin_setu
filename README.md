@@ -44,8 +44,11 @@ pip install nonebot_plugin_setu -U
 ## 使用方式
 
 <p align="center">
-    <a href="https://asciinema.org/a/488190"><img src="https://pan.freeload.icu/api/v3/file/source/61/setu_config.svg?sign=HE8H1qVEnrLJtPgTtiXtjW0LXdQ29NScguGy2-iNK64%3D%3A0"/></a>
+    <a href="https://asciinema.org/a/488190">
+    <img src="https://raw.githubusercontent.com/ayanamiblhx/chart_bed/0818ac4481e8d190c9be5d3cd9513d634962727f/svg/setu_config.svg" />
+    </a>
 </p>
+
 
 首先运行一遍robot，然后在robot目录的data目录下修改setu_config.json配置文件，然后重启robot
 
@@ -79,7 +82,7 @@ pip install nonebot_plugin_setu -U
 | 开启涩涩、开启私聊涩涩、关闭涩涩、关闭私聊涩涩          | 开启涩涩、开启私聊涩涩                       | 开启涩涩之后，机器人将会发送色色图片，涩涩以群聊为单位，支持不同群是否开启                                                |
 | 涩图帮助                             | 涩图帮助                              | 获取命令列表                                                                               |
 | 涩图转发者名字                          | 涩图转发者名字bot                        | 修改发送转发消息时的转发者名字                                                                      |
- 
+
 #### 注：
 
 - 用户cd和群cd同时存在时，以用户cd为准
