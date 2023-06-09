@@ -45,7 +45,7 @@ pip install nonebot_plugin_setu -U
 
 <p align="center">
     <a href="https://asciinema.org/a/488190">
-    <img src="https://raw.githubusercontent.com/ayanamiblhx/chart_bed/0818ac4481e8d190c9be5d3cd9513d634962727f/svg/setu_config.svg" />
+    <img src="https://bucket-1305806783.cos.ap-shanghai.myqcloud.com/setu_config.svg?q-sign-algorithm=sha1&q-ak=AKIDvdo-c-KtUVpgaidaLfg_guqXoNtIQPnCvJCwhSN_F2OyTjimJ2fpWlfpJWXaBj1F&q-sign-time=1686313421;1686317021&q-key-time=1686313421;1686317021&q-header-list=host&q-url-param-list=&q-signature=4d72847f10844e73e3c4887bd7b51c642fc65aae&x-cos-security-token=IntmoJTcUBDUbESzoQ06PJ24O5uj7qTaf3ec5b16fc5234af818f0ba4c00572a3w0u_kXF-8SZ6EeZc6NWKAuv14yL93dy0jiGCcdQmi5jBELN5evsVkYx_0FJ1UAXIqlU8wLM03ES2SClWaNDEHMRa6Za6HQTGTvetNNXLuLJyhNb6nTrz7-Knh9F24jJKup1llke-Z-EZIidVMCS8Lv68syeqF_dpGSwF86mgK7LR-rXmJv3yKO_-ADzNan1y7k-G2pqeQzX8jXMwWeRToQ" />
     </a>
 </p>
 
